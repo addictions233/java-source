@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    loadbalancer:
+      clients:
+        provider1:
+          retry:
+            enabled: true
+            max-retries-on-same-service-instance: 3
+        prvoider2:
+          retry:
+            enabled: true
+            max-retries-on-same-service-instance: 2

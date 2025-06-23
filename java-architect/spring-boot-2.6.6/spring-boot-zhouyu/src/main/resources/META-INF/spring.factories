@@ -1,0 +1,13 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.zhouyu.service.UserService
+
+
+# Run Listeners
+org.springframework.boot.SpringApplicationRunListener=\
+com.zhouyu.listener.MyApplicationRunListener
+
+org.springframework.context.ApplicationListener=\
+com.zhouyu.listener.MyApplicationEventListener
+
+org.springframework.context.ApplicationContextInitializer=\
+com.zhouyu.initializer.MyApplicationContextInitializer
