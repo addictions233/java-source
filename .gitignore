@@ -1,0 +1,50 @@
+######################################################################
+# Build Tools
+
+.gradle
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+######################################################################
+# IDE
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/*
+out/*
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+.flattened-pom.xml
+
+######################################################################
+# Others
+*.log
+*.xml.versionsBackup
+
+!*/build/*.java
+!*/build/*.html
+!*/build/*.xml
+
+# yapi
+*.yapi
+*.class
