@@ -522,12 +522,9 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   /**
-   * 方法实现说明
+   * 解析mapper映射配置文件的入口
    * @author:xsls
    * @param parent:mappers
-   * @return:
-   * @exception:
-   * @date:2019/8/30 16:32
    */
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
@@ -536,7 +533,7 @@ public class XMLConfigBuilder extends BaseBuilder {
        */
       for (XNode child : parent.getChildren()) {
         /**
-         * 判断我们mapper是不是通过批量注册的
+         * 判断我们mapper是不是通过批量注册的, 即标签是package
          * <package name="com.tuling.mapper"></package>
          */
         if ("package".equals(child.getName())) {
@@ -544,7 +541,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           configuration.addMappers(mapperPackage);
         } else {
           /**
-           * 判断从classpath下读取我们的mapper
+           * 判断从classpath下读取我们的mapper, 即标签是mapper
            * <mapper resource="mybatis/mapper/EmployeeMapper.xml"/>
            */
           String resource = child.getStringAttribute("resource");
@@ -556,7 +553,6 @@ public class XMLConfigBuilder extends BaseBuilder {
           /**
            * 解析这种类型(要求接口和xml在同一个包下)
            * <mapper class="com.tuling.mapper.DeptMapper"></mapper>
-           *
            */
           String mapperClass = child.getStringAttribute("class");
 

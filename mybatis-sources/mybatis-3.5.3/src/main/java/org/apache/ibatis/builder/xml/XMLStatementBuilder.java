@@ -64,9 +64,12 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
+  /**
+   * 解析sql语句, 封装为sqlSource, 最终封装为MappedStatement
+   */
   public void parseStatementNode() {
     /**
-     * 我们的insert|delte|update|select 语句的sqlId
+     * 我们的insert|delete|update|select 语句的sqlId
      */
     String id = context.getStringAttribute("id");
     /**
@@ -87,7 +90,7 @@ public class XMLStatementBuilder extends BaseBuilder {
      */
     String nodeName = context.getNode().getNodeName();
     /**
-     * 根据nodeName 获得 SqlCommandType枚举
+     * 根据nodeName 获得 SqlCommandType枚举, sql语句的类型
      */
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     /**

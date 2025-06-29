@@ -102,8 +102,7 @@ public class XMLMapperBuilder extends BaseBuilder {
      */
     if (!configuration.isResourceLoaded(resource)) {
       /**
-       * 真正的解析我们的 <mapper namespace="com.tuling.mapper.EmployeeMapper">
-       *
+       * 重点: 真正的解析我们的 <mapper namespace="com.tuling.mapper.EmployeeMapper">
        */
       configurationElement(parser.evalNode("/mapper"));
       /**
@@ -161,7 +160,7 @@ public class XMLMapperBuilder extends BaseBuilder {
        */
       cacheElement(context.evalNode("cache"));
       /**
-       * 解析paramterMap节点(该节点mybaits3.5貌似不推荐使用了)
+       * 解析parameterMap节点(该节点mybatis3.5貌似不推荐使用了)
        */
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       /**
@@ -199,18 +198,14 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   /**
-   * 方法实现说明:解析我们得得select|update|delte|insert节点然后
-   * 创建我们得mapperStatment对象
-   * @author:xsls
-   * @param list:所有的select|update|delte|insert节点
+   * 方法实现说明:解析我们得得select|update|delete|insert节点然后
+   * 创建我们得mapperStatement对象
+   * @param list:所有的select|update|delete|insert节点
    * @param requiredDatabaseId:判断有没有数据库厂商Id
-   * @return:
-   * @exception:
-   * @date:2019/9/5 21:35
    */
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     /**
-     * 循环我们的select|delte|insert|update节点
+     * 循环我们的select|delete|insert|update节点
      */
     for (XNode context : list) {
       /**
