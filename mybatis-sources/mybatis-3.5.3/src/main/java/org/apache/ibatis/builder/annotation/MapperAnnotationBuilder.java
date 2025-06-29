@@ -127,7 +127,7 @@ public class MapperAnnotationBuilder {
     String resource = type.toString();
     // 是否已经解析mapper接口对应的xml
     if (!configuration.isResourceLoaded(resource)) {
-      // 根据mapper接口名获取 xml文件并解析，  解析<mapper></mapper>里面所有东西放到configuration
+      // 根据mapper接口名获取 xml映射配置文件，  解析<mapper></mapper>里面所有东西放到configuration
       loadXmlResource();
       // 添加已解析的标记
       configuration.addLoadedResource(resource);
@@ -141,6 +141,7 @@ public class MapperAnnotationBuilder {
           // issue #237
           if (!method.isBridge()) {
             // 是不是用了注解  用了注解会将注解解析成MappedStatement
+            // 接口中使用@Select注解声明的sql, 也会封装称为MappedStatement
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {

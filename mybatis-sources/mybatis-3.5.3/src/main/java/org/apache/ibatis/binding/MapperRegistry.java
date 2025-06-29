@@ -139,6 +139,7 @@ public class MapperRegistry {
     Set<Class<? extends Class<?>>> mapperSet = resolverUtil.getClasses();
     // 循环所有的类
     for (Class<?> mapperClass : mapperSet) {
+      // 重点: 添加Mapper接口
       addMapper(mapperClass);
     }
   }
