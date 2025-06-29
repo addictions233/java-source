@@ -46,7 +46,12 @@ public class SqlSessionFactoryBuilder {
 
   public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
     try {
+      // 用于解析 mybatis-config.xml，同时创建了 Configuration 对象
       XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
+      // 解析XML，最终返回一个 DefaultSqlSessionFactory
+      // 全局配置文件的信息封装到Configuration对象中
+      // 映射配置文件的信息同样也被封装到Configuration对象中
+      // 一个具体的 CRUD 标签被封装到 MappedStatement对象中
       return build(parser.parse());
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -90,6 +95,7 @@ public class SqlSessionFactoryBuilder {
 
   // 到这里配置文件已经解析成了Configuration
   public SqlSessionFactory build(Configuration config) {
+    // 默认创建的是DefaultSqlSessionFactory实现类对象
     return new DefaultSqlSessionFactory(config);
   }
 

@@ -146,6 +146,7 @@ public class Configuration {
 
   protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
   protected final InterceptorChain interceptorChain = new InterceptorChain();
+  // 类型处理器注册器 TypeHandlerRegistry的构造初始化
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
   // 类型别名注册器 TypeAliasRegistry构造函数会注册一些， Configuration构造函数会注册一些
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
@@ -154,6 +155,7 @@ public class Configuration {
   protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection")
       .conflictMessageProducer((savedValue, targetValue) ->
           ". please check " + savedValue.getResource() + " and " + targetValue.getResource());
+  // 记录 namespace和Cache对象之间的对应关系
   protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
   protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
@@ -180,6 +182,7 @@ public class Configuration {
   }
 
   public Configuration() {
+    // 为类型注册别名, 可以在xml配置文件中直接使用别名
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 

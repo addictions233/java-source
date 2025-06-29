@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tuling.mapper.UserMapper">
-    <cache ></cache>
+    <!-- 开启二级缓存 -->
+    <cache/>
+
     <!-- Mybatis 是如何将 sql 执行结果封装为目标对象并返回的？都有哪些映射形式？-->
     <resultMap id="result" type="com.tuling.entity.User">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="birthday" jdbcType="DATE" property="birthday"/>
         <!--<collection property="" select=""-->
-
     </resultMap>
-
 
     <select id="selectById" resultMap="result"  >
         select id,name,name from tb_user
@@ -21,7 +21,6 @@
             </if>
         </where>
     </select>
-
 
     <!--
       动态sql数据源  需要在调用crud 解析sql

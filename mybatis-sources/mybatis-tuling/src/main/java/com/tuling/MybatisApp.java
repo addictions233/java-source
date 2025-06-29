@@ -13,7 +13,11 @@ import java.io.Reader;
  * @Author 徐庶   QQ:1092002729
  * @Slogan 致敬大师，致敬未来的你
  */
-public class App {
+public class MybatisApp {
+
+    /**
+     * mybaits执行的核心流程
+     */
     public static void main(String[] args) throws IOException {
         String resource = "mybatis-config.xml";
         //将XML配置文件构建为Configuration配置类

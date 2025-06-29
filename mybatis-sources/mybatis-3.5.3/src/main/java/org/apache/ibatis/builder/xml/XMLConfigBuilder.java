@@ -92,15 +92,14 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
     /**
-     * 调用父类的BaseBuilder的构造方法:给
-     * configuration赋值
+     * 调用父类的BaseBuilder的构造方法:给configuration赋值
      * typeAliasRegistry别名注册器赋值
-     * TypeHandlerRegistry赋值
+     * TypeHandlerRegistry 类型处理器注册器赋值
      */
     super(new Configuration());
     ErrorContext.instance().resource("SQL Mapper Configuration");
     /**
-     * 把props绑定到configuration的props属性上
+     * 把props绑定到configuration的variables属性上
      */
     this.configuration.setVariables(props);
     this.parsed = false;
@@ -108,6 +107,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     this.parser = parser;
   }
 
+  /**
+   * 全局配置文件信息和映射配置文件信息都是封装到Configuration对象中
+   */
   public Configuration parse() {
     /**
      * 若已经解析过了 就抛出异常
@@ -120,11 +122,9 @@ public class XMLConfigBuilder extends BaseBuilder {
      */
     parsed = true;
     /**
-     * 解析我们的mybatis-config.xml的
-     * 节点
+     * 解析我们的mybatis-config.xml的最外层节点
      * <configuration>
-     *
-     *
+     *   .....
      * </configuration>
      */
     parseConfiguration(parser.evalNode("/configuration"));
@@ -133,11 +133,10 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   /**
    * 方法实现说明:解析我们mybatis-config.xml的 configuration节点
-   * @author:xsls
-   * @param root:configuration节点对象
-   * @return:
-   * @exception:
-   * @date:2019/8/30 15:57
+   * 由于xml配置文件的节点顺序已经定义在了DTD文件中了,所以我们按照DTD文件中的顺序来解析
+   * 解析完成后,我们的全局配置信息就封装到Configuration对象中了
+   *
+   * @param root configuration节点对象
    */
   private void parseConfiguration(XNode root) {
     try {
@@ -148,6 +147,7 @@ public class XMLConfigBuilder extends BaseBuilder {
        *           org.apache.ibatis.session.Configuration#variables
        */
       propertiesElement(root.evalNode("properties"));
+
       /**
        * 解析我们的mybatis-config.xml中的settings节点
        * 具体可以配置哪些属性:http://www.mybatis.org/mybatis-3/zh/configuration.html#settings
@@ -162,6 +162,7 @@ public class XMLConfigBuilder extends BaseBuilder {
        *
        */
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+
       /**
        * 基本没有用过该属性
        * VFS含义是虚拟文件系统；主要是通过程序能够方便读取本地文件系统、FTP文件系统等系统中的文件资源。
@@ -169,12 +170,14 @@ public class XMLConfigBuilder extends BaseBuilder {
        * 解析到：org.apache.ibatis.session.Configuration#vfsImpl
        */
       loadCustomVfs(settings);
+
       /**
        * 指定 MyBatis 所用日志的具体实现，未指定时将自动查找。
        * SLF4J | LOG4J | LOG4J2 | JDK_LOGGING | COMMONS_LOGGING | STDOUT_LOGGING | NO_LOGGING
        * 解析到org.apache.ibatis.session.Configuration#logImpl
        */
       loadCustomLogImpl(settings);
+
       /**
        * 解析我们的别名
        * <typeAliases>
@@ -187,6 +190,7 @@ public class XMLConfigBuilder extends BaseBuilder {
        * 除了自定义的，还有内置的
        */
       typeAliasesElement(root.evalNode("typeAliases"));
+
       /**
        * 解析我们的插件(比如分页插件)
        * mybatis自带的
@@ -208,7 +212,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
 
       // 设置settings中配置的值设置到configuration
-      // 如果settings中没有配置，就使用默认值
+      // 如果settings中没有配置，就使用默认配置值, 这里可以看到mybatis的很多默认配置值
       settingsElement(settings);
 
       /**
@@ -224,10 +228,11 @@ public class XMLConfigBuilder extends BaseBuilder {
        *        </dataSource>
        *      </environment>
        *  </environments>
-       *  解析到：org.apache.ibatis.session.Configuration#environment
+       *  解析到：org.apache.ibatis.session.Configuration#environment属性中
        *  在集成spring情况下由 spring-mybatis提供数据源 和事务工厂
        */
       environmentsElement(root.evalNode("environments"));
+
       /**
        * 解析数据库厂商
        *     <databaseIdProvider type="DB_VENDOR">
@@ -247,8 +252,9 @@ public class XMLConfigBuilder extends BaseBuilder {
        *   解析到：org.apache.ibatis.session.Configuration#typeHandlerRegistry.typeHandlerMap
        */
       typeHandlerElement(root.evalNode("typeHandlers"));
+
       /**
-       * 最最最最最重要的就是解析我们的mapper
+       * 最最最最最重要的就是解析我们的mapper, 解析映射配置文件
        *
        * resource：来注册我们的class类路径下的
        * url:来指定我们磁盘下的或者网络资源的
@@ -259,9 +265,7 @@ public class XMLConfigBuilder extends BaseBuilder {
        * <mappers>
        *    <mapper resource="mybatis/mapper/EmployeeMapper.xml"/>
        *    <mapper class="com.tuling.mapper.DeptMapper"></mapper>
-       *
-       *
-       *     <package name="com.tuling.mapper"></package>
+       *    <package name="com.tuling.mapper"></package>
        *    -->
        * </mappers>
        * package
@@ -278,6 +282,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (context == null) {
       return new Properties();
     }
+    // 获取settings下的所有节点
     Properties props = context.getChildrenAsProperties();
     // Check that all settings are known to the configuration class
     // 其实就是去configuration类里面拿到所有setter方法， 看看有没有当前的配置项
@@ -379,16 +384,19 @@ public class XMLConfigBuilder extends BaseBuilder {
       if (resource != null && url != null) {
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
+      // 加载resource 或者 url指定的 properties 属性文件
       if (resource != null) {
         defaults.putAll(Resources.getResourceAsProperties(resource));
       } else if (url != null) {
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
+      // 配置文件中已有的属性信息
       Properties vars = configuration.getVariables();
       if (vars != null) {
         defaults.putAll(vars);
       }
       parser.setVariables(defaults);
+      // 解析出来的配置信息关联到configuration对象中
       configuration.setVariables(defaults);
     }
   }
@@ -430,8 +438,11 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
         if (isSpecifiedEnvironment(id)) {
+          // 事务工厂
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
+          // 数据源工厂
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+          // 创建数据源对象
           DataSource dataSource = dsFactory.getDataSource();
           Environment.Builder environmentBuilder = new Environment.Builder(id)
               .transactionFactory(txFactory)

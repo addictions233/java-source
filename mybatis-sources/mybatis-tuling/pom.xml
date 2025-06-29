@@ -12,11 +12,13 @@
 
     </properties>
     <dependencies>
+        <!--  引入自己的mybatis的源码依赖   -->
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
             <version>3.5.3-xsls</version>
         </dependency>
+
         <!-- mysql驱动 -->
         <dependency>
             <groupId>mysql</groupId>
