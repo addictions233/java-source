@@ -55,14 +55,18 @@ public class SimpleExecutor extends BaseExecutor {
 
   @Override
   public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+    // 就是jdbc中的statement, 用于执行sql语句, 通常使用prepareStatement来实例化
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
+      // 注意:已经来到SQL处理的关键对象StatementHandler, 同时完成了 ParameterHandler 和 ResultSetHandler 的实例化
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
       // 拿到连接和statement
       stmt = prepareStatement(handler, ms.getStatementLog());
+      // 执行查询
       return handler.query(stmt, resultHandler);
     } finally {
+      // 关闭statement
       closeStatement(stmt);
     }
   }

@@ -585,6 +585,7 @@ public class Configuration {
 
   public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+    // 拦截器的织入逻辑
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     return parameterHandler;
   }
@@ -592,12 +593,14 @@ public class Configuration {
   public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler,
       ResultHandler resultHandler, BoundSql boundSql) {
     ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
+    // 拦截器的织入逻辑
     resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
     return resultSetHandler;
   }
 
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+    // 织入插件逻辑, 返回代理对象
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
     return statementHandler;
   }
@@ -612,8 +615,6 @@ public class Configuration {
    * @param transaction:事务
    * @param executorType:执行器类型
    * @return:Executor执行器对象
-   * @exception:
-   * @date:2019/9/9 13:59
    */
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
     executorType = executorType == null ? defaultExecutorType : executorType;
@@ -632,14 +633,14 @@ public class Configuration {
       //简单的sql执行器对象
       executor = new SimpleExecutor(this, transaction);
     }
-    //判断mybatis的全局配置文件是否开启缓存
+    //判断mybatis的全局配置文件是否开启二级缓存
     if (cacheEnabled) {
       //把当前的简单的执行器包装成一个CachingExecutor
       executor = new CachingExecutor(executor);
     }
     /**
-     * TODO:调用所有的拦截器对象plugin方法
-     * 插件： 责任链+ 装饰器模式（动态代理）
+     * 重点: 调用所有的拦截器对象plugin方法
+     * 插件： 责任链 + 装饰器模式（动态代理）
      */
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;

@@ -357,12 +357,15 @@ public abstract class BaseExecutor implements Executor {
 
   private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     List<E> list;
+    // 先占位, 也就是表示一级缓存中已经有数据了, 只是操作还没有完成, 相同的操作不用再去数据库中查询了
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
+      // 默认 Executor 为 SimpleExecutor
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
       localCache.removeObject(key);
     }
+    // 写入一级缓存
     localCache.putObject(key, list);
     if (ms.getStatementType() == StatementType.CALLABLE) {
       localOutputParameterCache.putObject(key, parameter);

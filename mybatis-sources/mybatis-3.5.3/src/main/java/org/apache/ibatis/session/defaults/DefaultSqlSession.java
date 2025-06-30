@@ -76,8 +76,6 @@ public class DefaultSqlSession implements SqlSession {
    * @param statement:我们的statementId(com.tuling.mapper.EmployeeMapper.findOne)
    * @param parameter:调用时候的参数
    * @return: T 返回结果
-   * @exception:
-   * @date:2019/9/9 20:26
    */
   @Override
   public <T> T selectOne(String statement, Object parameter) {
@@ -184,9 +182,9 @@ public class DefaultSqlSession implements SqlSession {
        */
       MappedStatement ms = configuration.getMappedStatement(statement);
       /**
-       * 通过执行器去执行我们的sql对象
+       * 通过执行器executor真正去执行我们的sql对象
        * 第一步:包装我们的集合类参数
-       * 第二步:一般情况下是executor为cacheExetory对象
+       * 第二步:一般情况下是executor为cacheExecutor对象
        */
       return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
     } catch (Exception e) {
