@@ -41,9 +41,6 @@ public class MapperRegistry {
    * @author:xsls
    * @param type:Mapper的接口类型
    * @param sqlSession:接口类型实际上是我们的sqlSessionTemplate类型
-   * @return:
-   * @exception:
-   * @date:2019/8/22 20:41
    */
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
