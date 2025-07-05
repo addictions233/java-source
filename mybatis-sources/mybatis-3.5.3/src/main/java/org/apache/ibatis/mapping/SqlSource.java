@@ -27,9 +27,6 @@ public interface SqlSource {
    * 方法实现说明:解析我们原生的sql
    * @author:xsls
    * @param parameterObject:参数对象
-   * @return:BoundSql
-   * @exception:
-   * @date:2019/9/6 15:29
    */
   BoundSql getBoundSql(Object parameterObject);
 

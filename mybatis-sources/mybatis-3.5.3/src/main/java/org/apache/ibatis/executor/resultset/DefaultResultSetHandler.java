@@ -180,19 +180,25 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   @Override
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
-
+    // 该集合用于保存映射结果集得到的结果对象
     final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
-    ResultSetWrapper rsw = getFirstResultSet(stmt);//结果集的第一个结果
-
+    //结果集的第一个结果
+    ResultSetWrapper rsw = getFirstResultSet(stmt);
+    // <ResultMap>标签会被解析为ResultMap对象, 并保存在 mappedStatement.resultMaps 集合中
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
     int resultMapCount = resultMaps.size();
     validateResultMapsCount(rsw, resultMapCount);
+    // 遍历 ResultMap 结果集
     while (rsw != null && resultMapCount > resultSetCount) {
+      // 获取循环的 ResultMap 对象
       ResultMap resultMap = resultMaps.get(resultSetCount);
-      handleResultSet(rsw, resultMap, multipleResults, null);//根据resultMap处理rsw生成java对象
-      rsw = getNextResultSet(stmt); //获取结果集的下一个结果
+      // 处理单个 ResultSet对象, 也就是根据 ResultMap 中定义的映射规则 处理 ResultSet 结果集
+      //根据resultMap处理rsw生成java对象
+      handleResultSet(rsw, resultMap, multipleResults, null);
+      //获取结果集的下一个结果
+      rsw = getNextResultSet(stmt);
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
     }
@@ -350,9 +356,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     DefaultResultContext<Object> resultContext = new DefaultResultContext<>();
     ResultSet resultSet = rsw.getResultSet();
     skipRows(resultSet, rowBounds);
+    // 检测引进处理的行数是否已经达到了 rowBounds.limit 的限制
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
       Object rowValue = getRowValue(rsw, discriminatedResultMap, null);
+      // 保证映射得到的结果对象
       storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
     }
   }
@@ -475,6 +483,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     } else {   // 直接调用类型处理器获取数据了
       final TypeHandler<?> typeHandler = propertyMapping.getTypeHandler();
       final String column = prependPrefix(propertyMapping.getColumn(), columnPrefix);
+      // 使用typeHandler处理result
       return typeHandler.getResult(rs, column);
     }
   }

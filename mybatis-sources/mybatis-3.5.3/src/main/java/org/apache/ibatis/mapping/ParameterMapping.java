@@ -30,11 +30,15 @@ public class ParameterMapping {
 
   private Configuration configuration;
 
+  // #{id}  --> id
   private String property;
   private ParameterMode mode;
+  // java类型
   private Class<?> javaType = Object.class;
+  // JDBC类型
   private JdbcType jdbcType;
   private Integer numericScale;
+  // 类型转换器
   private TypeHandler<?> typeHandler;
   private String resultMapId;
   private String jdbcTypeName;

@@ -61,7 +61,7 @@ public class SimpleExecutor extends BaseExecutor {
       Configuration configuration = ms.getConfiguration();
       // 注意:已经来到SQL处理的关键对象StatementHandler, 同时完成了 ParameterHandler 和 ResultSetHandler 的实例化
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
-      // 拿到连接和statement
+      // 拿到连接和statement, 需要使用ParameterMapping进行参数处理
       stmt = prepareStatement(handler, ms.getStatementLog());
       // 执行查询
       return handler.query(stmt, resultHandler);

@@ -61,6 +61,9 @@ public class DefaultParameterHandler implements ParameterHandler {
   @Override
   public void setParameters(PreparedStatement ps) {
     ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
+    // 取出SQL中的参数映射列表, id int IntegerHandler
+    // 我们写的sql语句:   select * from t_user where id = #{id}
+    // mybatis解析之后的: select * from t_user where id = ?
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings != null) {
       for (int i = 0; i < parameterMappings.size(); i++) {
@@ -80,7 +83,8 @@ public class DefaultParameterHandler implements ParameterHandler {
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
             value = metaObject.getValue(propertyName);
           }
-          TypeHandler typeHandler = parameterMapping.getTypeHandler(); // 这个类型处理器是在解析BoundSql的时候就解析好了的
+          // 这个类型处理器是在解析BoundSql的时候就解析好了的
+          TypeHandler typeHandler = parameterMapping.getTypeHandler();
           JdbcType jdbcType = parameterMapping.getJdbcType();
           if (value == null && jdbcType == null) {
             jdbcType = configuration.getJdbcTypeForNull();

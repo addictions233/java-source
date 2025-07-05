@@ -40,7 +40,9 @@ public class SqlSourceBuilder extends BaseBuilder {
   }
 
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+    // 为参数构建ParameterMapping
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
+    // 把 #参数 解析成为 ? 占位符, 占位符 select * from t_user where id = #{id}
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
     // 替换sql中的#{}  替换成问号， 并且会顺便拿到#{}中的参数名解析成ParameterMapping
     String sql = parser.parse(originalSql);
