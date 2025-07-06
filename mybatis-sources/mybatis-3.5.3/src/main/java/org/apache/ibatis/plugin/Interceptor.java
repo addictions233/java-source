@@ -22,12 +22,15 @@ import java.util.Properties;
  */
 public interface Interceptor {
 
+  // 执行拦截逻辑的方法
   Object intercept(Invocation invocation) throws Throwable;
 
+  // 决定是否触发Interceptor的intercept方法
   default Object plugin(Object target) {
     return Plugin.wrap(target, this);
   }
 
+  // 初始化Interceptor 可以通过该方法获取插件配置的属性并进行初始
   default void setProperties(Properties properties) {
     // NOP
   }

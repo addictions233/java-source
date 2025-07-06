@@ -13,7 +13,9 @@ import org.apache.ibatis.session.RowBounds;
  * @Author 徐庶   QQ:1092002729
  * @Slogan 致敬大师，致敬未来的你
  */
-@Intercepts({@Signature(type = Executor.class, method = "query", args = {
+@Intercepts({@Signature(type = Executor.class, // 需要拦截的类型
+        method = "query", // 需要拦截的方法
+        args = {  // args 中指定 被拦截方法的 参数列表
         MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class
 })})
 //@Intercepts({@Signature( type= StatementHandler.class,  method = "update", args ={Statement.class})})
