@@ -1120,6 +1120,7 @@ public abstract class AbstractEndpoint<S> {
             }
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
+                // 使用executor线程池进行真正的数据处理
                 executor.execute(sc);
             } else {
                 sc.run();
