@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
+
+import java.util.Arrays;
 
 /**
  * @author one
@@ -27,6 +30,8 @@ public class MyApplication {
 		System.out.println(Thread.currentThread().getContextClassLoader());
 
 		ConfigurableApplicationContext applicationContext = SpringApplication.run(MyApplication.class, args);
+		Environment environment = applicationContext.getBean(Environment.class);
+		Arrays.stream(environment.getActiveProfiles()).forEach(System.out::println);
 		System.out.println(applicationContext);
 	}
 
