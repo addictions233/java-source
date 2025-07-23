@@ -1184,6 +1184,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
+			// 监听容器刷新事件, 完成springmvc核心组件的初始化
 			FrameworkServlet.this.onApplicationEvent(event);
 		}
 	}

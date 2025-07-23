@@ -256,7 +256,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		}
 		// 这一步判断是关键  是否有Controller 或 RequestMapping注解
 		if (beanType != null && isHandler(beanType)) {
-			// 解析HandlerMethods
+			// 如果bean上有@Controller或@RequestMapping注解, 则解析HandlerMethods
 			detectHandlerMethods(beanName);
 		}
 	}
