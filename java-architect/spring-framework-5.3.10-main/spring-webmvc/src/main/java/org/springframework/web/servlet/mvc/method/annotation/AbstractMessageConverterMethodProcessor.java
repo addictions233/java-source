@@ -229,12 +229,14 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 			}
 			// 如果没有设置MediaType
 			// 通过HttpMessageConverter 介入、找到最合适的HttpMessageConverter， 获取对应设定的MediaType
+			// 比如返回值是String, 那么就会使用StringHttpMessageConverter, 对应的MediaType是text/plain
 			List<MediaType> producibleTypes = getProducibleMediaTypes(request, valueType, targetType);
 
 			if (body != null && producibleTypes.isEmpty()) {
 				throw new HttpMessageNotWritableException(
 						"No converter found for return value of type: " + valueType);
 			}
+			// 找到双方都接受的MediaType, 请求最想要的是text/html格式, 那就看服务端支不支持
 			List<MediaType> mediaTypesToUse = new ArrayList<>();
 			for (MediaType requestedType : acceptableTypes) {
 				for (MediaType producibleType : producibleTypes) {
@@ -254,7 +256,8 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 			}
 
 			MediaType.sortBySpecificityAndQuality(mediaTypesToUse);
-
+			// 遍历所有的MediaType, 找到第一个具体的MediaType
+			// 请求方会告知服务器自己想要的接收的MediaType
 			for (MediaType mediaType : mediaTypesToUse) {
 				if (mediaType.isConcrete()) {
 					selectedMediaType = mediaType;
@@ -274,6 +277,7 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 
 		if (selectedMediaType != null) {
 			selectedMediaType = selectedMediaType.removeQualityValue();
+			// 遍历所有的HttpMessageConverter, 找到第一个支持该MediaType的HttpMessageConverter
 			for (HttpMessageConverter<?> converter : this.messageConverters) {
 				GenericHttpMessageConverter genericConverter = (converter instanceof GenericHttpMessageConverter ?
 						(GenericHttpMessageConverter<?>) converter : null);
@@ -292,6 +296,7 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 							genericConverter.write(body, targetType, selectedMediaType, outputMessage);
 						}
 						else {
+							// 使用HttpMessageConverter写入响应体
 							((HttpMessageConverter) converter).write(body, selectedMediaType, outputMessage);
 						}
 					}
