@@ -16,15 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import java.beans.PropertyEditor;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
@@ -48,6 +39,14 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.multipart.support.MultipartResolutionDelegate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.beans.PropertyEditor;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Resolves method arguments annotated with @{@link RequestParam}, arguments of
@@ -125,6 +124,7 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
+		// 支持@RequestParam注解
 		if (parameter.hasParameterAnnotation(RequestParam.class)) {
 			if (Map.class.isAssignableFrom(parameter.nestedIfOptional().getNestedParameterType())) {
 				RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
@@ -135,14 +135,17 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 			}
 		}
 		else {
+			// 不支持@RequestPart注解
 			if (parameter.hasParameterAnnotation(RequestPart.class)) {
 				return false;
 			}
 			parameter = parameter.nestedIfOptional();
+			// 如果是MultipartFile类型的参数, 也支持
 			if (MultipartResolutionDelegate.isMultipartArgument(parameter)) {
 				return true;
 			}
 			else if (this.useDefaultResolution) {
+				// 判断参数是否是简单类型, 如果是简单类型支持解析
 				return BeanUtils.isSimpleProperty(parameter.getNestedParameterType());
 			}
 			else {
@@ -163,6 +166,7 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 		HttpServletRequest servletRequest = request.getNativeRequest(HttpServletRequest.class);
 
 		if (servletRequest != null) {
+			// 处理文件上传, 获取MultipartFile
 			Object mpArg = MultipartResolutionDelegate.resolveMultipartArgument(name, parameter, servletRequest);
 			if (mpArg != MultipartResolutionDelegate.UNRESOLVABLE) {
 				return mpArg;
@@ -177,7 +181,9 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 				arg = (files.size() == 1 ? files.get(0) : files);
 			}
 		}
-		if (arg == null) {// *解析参数值 ： request.getParameter方式
+		if (arg == null) {
+			// *解析参数值 ： request.getParameter方式, 获取name对于的请求参数
+			// 注意返回的是一个数组, 也就是一个name可以对应多个参数值
 			String[] paramValues = request.getParameterValues(name);
 			if (paramValues != null) {
 				arg = (paramValues.length == 1 ? paramValues[0] : paramValues);

@@ -1202,6 +1202,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @see MultipartResolver#resolveMultipart
 	 */
 	protected HttpServletRequest checkMultipart(HttpServletRequest request) throws MultipartException {
+		// 使用multipartResolver判断是否真正是文件上传请求
 		if (this.multipartResolver != null && this.multipartResolver.isMultipart(request)) {
 			if (WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class) != null) {
 				if (DispatcherType.REQUEST.equals(request.getDispatcherType())) {
@@ -1214,6 +1215,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 			else {
 				try {
+					// 使用multipartResolver解析请求
 					return this.multipartResolver.resolveMultipart(request);
 				}
 				catch (MultipartException ex) {

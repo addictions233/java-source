@@ -16,26 +16,6 @@
 
 package org.springframework.web.multipart.support;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.mail.internet.MimeUtility;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
@@ -45,6 +25,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.mail.internet.MimeUtility;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * Spring MultipartHttpServletRequest adapter, wrapping a Servlet 3.0 HttpServletRequest
@@ -85,6 +73,7 @@ public class StandardMultipartHttpServletRequest extends AbstractMultipartHttpSe
 
 		super(request);
 		if (!lazyParsing) {
+			// 重点: 解析文件上传请求
 			parseRequest(request);
 		}
 	}
@@ -92,20 +81,23 @@ public class StandardMultipartHttpServletRequest extends AbstractMultipartHttpSe
 
 	private void parseRequest(HttpServletRequest request) {
 		try {
+			// 重点: 通过Tomcat提供的RequestFacade对象获取ApplicationPart
 			Collection<Part> parts = request.getParts();
 			this.multipartParameterNames = new LinkedHashSet<>(parts.size());
 			MultiValueMap<String, MultipartFile> files = new LinkedMultiValueMap<>(parts.size());
 			for (Part part : parts) {
 				String headerValue = part.getHeader(HttpHeaders.CONTENT_DISPOSITION);
 				ContentDisposition disposition = ContentDisposition.parse(headerValue);
+				// 获取ApplicationPart中的文件名
 				String filename = disposition.getFilename();
-				if (filename != null) {
+				if (filename != null) { // 如果part是文件上传项,那么有filename
 					if (filename.startsWith("=?") && filename.endsWith("?=")) {
 						filename = MimeDelegate.decode(filename);
 					}
+					// 将part对象封装成StandardMultipartFile对象
 					files.add(part.getName(), new StandardMultipartFile(part, filename));
 				}
-				else {
+				else { // 如果part没有文件名, 那么就是一个普通的文本
 					this.multipartParameterNames.add(part.getName());
 				}
 			}

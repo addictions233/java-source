@@ -16,13 +16,6 @@
 
 package org.springframework.web.multipart.support;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
@@ -31,6 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A common delegate for {@code HandlerMethodArgumentResolver} implementations
@@ -96,8 +95,9 @@ public final class MultipartResolutionDelegate {
 
 		MultipartHttpServletRequest multipartRequest =
 				WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class);
+		// 判断是否是文件上传的请求
 		boolean isMultipart = (multipartRequest != null || isMultipartContent(request));
-
+		// 如果方法参数类型是MultipartFile
 		if (MultipartFile.class == parameter.getNestedParameterType()) {
 			if (!isMultipart) {
 				return null;
@@ -105,6 +105,7 @@ public final class MultipartResolutionDelegate {
 			if (multipartRequest == null) {
 				multipartRequest = new StandardMultipartHttpServletRequest(request);
 			}
+			// 通过filename去获取MultipartFile
 			return multipartRequest.getFile(name);
 		}
 		else if (isMultipartFileCollection(parameter)) {

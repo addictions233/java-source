@@ -16,10 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.List;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.http.codec.HttpMessageReader;
@@ -28,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * Resolves method arguments annotated with {@code @RequestBody} by reading the
@@ -52,6 +51,7 @@ public class RequestBodyMethodArgumentResolver extends AbstractMessageReaderArgu
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
+		// 支持@RequestBody注解
 		return parameter.hasParameterAnnotation(RequestBody.class);
 	}
 
