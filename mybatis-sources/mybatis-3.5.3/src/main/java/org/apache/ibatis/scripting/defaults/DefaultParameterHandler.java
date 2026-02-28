@@ -70,7 +70,9 @@ public class DefaultParameterHandler implements ParameterHandler {
         ParameterMapping parameterMapping = parameterMappings.get(i);
         if (parameterMapping.getMode() != ParameterMode.OUT) {
           Object value;
+          // 得到#{}中的参数名
           String propertyName = parameterMapping.getProperty();
+          // 先从BoundSql的additionalParameter中获取参数值
           if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
             value = boundSql.getAdditionalParameter(propertyName);
           } else if (parameterObject == null) {
