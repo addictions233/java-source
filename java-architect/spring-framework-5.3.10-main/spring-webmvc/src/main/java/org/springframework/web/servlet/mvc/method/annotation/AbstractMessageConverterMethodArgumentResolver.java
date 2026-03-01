@@ -16,33 +16,12 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.log.LogFormatUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.InvalidMediaTypeException;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -56,6 +35,14 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * A base class for resolving method argument values by reading from the body of
@@ -149,6 +136,7 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 		MediaType contentType;
 		boolean noContentType = false;
 		try {
+			// 读取请求头中的 ContentType
 			contentType = inputMessage.getHeaders().getContentType();
 		}
 		catch (InvalidMediaTypeException ex) {
@@ -156,6 +144,7 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 		}
 		if (contentType == null) {
 			noContentType = true;
+			// 如果请求头没有ContentType, 给一个默认值 MediaType APPLICATION_OCTET_STREAM
 			contentType = MediaType.APPLICATION_OCTET_STREAM;
 		}
 
@@ -166,6 +155,7 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 			targetClass = (Class<T>) resolvableType.resolve();
 		}
 
+		// 获取请求的 HttpMethod
 		HttpMethod httpMethod = (inputMessage instanceof HttpRequest ? ((HttpRequest) inputMessage).getMethod() : null);
 		Object body = NO_VALUE;
 
@@ -173,15 +163,21 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 		try {
 			message = new EmptyBodyCheckingHttpInputMessage(inputMessage);
 
+			// 遍历所有的 HttpMessageConverter
 			for (HttpMessageConverter<?> converter : this.messageConverters) {
 				Class<HttpMessageConverter<?>> converterType = (Class<HttpMessageConverter<?>>) converter.getClass();
 				GenericHttpMessageConverter<?> genericConverter =
 						(converter instanceof GenericHttpMessageConverter ? (GenericHttpMessageConverter<?>) converter : null);
+
+				// 调用 GenericHttpMessageConverter#canRead 判断是否支持读取
 				if (genericConverter != null ? genericConverter.canRead(targetType, contextClass, contentType) :
 						(targetClass != null && converter.canRead(targetClass, contentType))) {
 					if (message.hasBody()) {
+						// 执行 RequestBodyAdvice 请求体增强
 						HttpInputMessage msgToUse =
 								getAdvice().beforeBodyRead(message, parameter, targetType, converterType);
+
+						// 重点:调用 GenericHttpMessageConverter#read 真正的读取请求体
 						body = (genericConverter != null ? genericConverter.read(targetType, contextClass, msgToUse) :
 								((HttpMessageConverter<T>) converter).read(targetClass, msgToUse));
 						body = getAdvice().afterBodyRead(body, msgToUse, parameter, targetType, converterType);
@@ -213,6 +209,7 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 			return "Read \"" + selectedContentType + "\" to [" + formatted + "]";
 		});
 
+		// 返回读取的请求体
 		return body;
 	}
 
