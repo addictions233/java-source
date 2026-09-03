@@ -36,11 +36,6 @@ include "spring-webmvc"
 include "spring-websocket"
 include "framework-bom"
 include "integration-tests"
-include 'tuling'
-include 'tuling-aop'
-include 'spring-tuling-webmvc'
-include 'spring-tuling-boot'
-
 
 rootProject.name = "spring"
 rootProject.children.each {project ->
@@ -61,4 +56,8 @@ settings.gradle.projectsLoaded {
 		}
 	}
 }
+include 'tuling'
+include 'tuling-aop'
+include 'spring-tuling-webmvc'
+include 'spring-tuling-boot'
 
