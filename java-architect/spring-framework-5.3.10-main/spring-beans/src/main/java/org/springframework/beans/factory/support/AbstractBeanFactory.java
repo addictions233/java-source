@@ -329,7 +329,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
 				else {
-					// bean的生命周期是请求域, 会话域等, 专门处理spring mvc中的一些Bean
+					// bean的生命周期是请求域request, 会话域session等, 专门处理spring mvc中的一些Bean
 					String scopeName = mbd.getScope();
 					if (!StringUtils.hasLength(scopeName)) {
 						throw new IllegalStateException("No scope name defined for bean ´" + beanName + "'");
@@ -1663,10 +1663,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected boolean isFactoryBean(String beanName, RootBeanDefinition mbd) {
 		Boolean result = mbd.isFactoryBean;
 		if (result == null) {
-			// 根据BeanDefinition推测Bean类型（获取BeanDefinition的beanClass属性）
+			// 根据BeanDefinition推测BeanType类型（获取BeanDefinition的beanClass属性）
 			Class<?> beanType = predictBeanType(beanName, mbd, FactoryBean.class);
-			// 判断是不是实现了FactoryBean接口
+			// 判断BeanType是不是实现了FactoryBean接口
 			result = (beanType != null && FactoryBean.class.isAssignableFrom(beanType));
+			// 在beanDefinition中打上标识
 			mbd.isFactoryBean = result;
 		}
 		return result;
