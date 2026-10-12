@@ -16,15 +16,16 @@ import java.util.ServiceLoader;
 public class MyImportSelector implements DeferredImportSelector {
     @Override
     public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-        /**
-         * 使用spi加载所有的配置类, 在META-INF/services目录下的配置
-         */
+        // 使用spi加载所有的配置类, 在META-INF/services目录下的配置
+        // META-INF/services是JDK内置的ServiceLoader机制专用目录
+        // spring.factories是Spring Framework提供的SpringFactoriesLoader工具类约定的配置文件，属于Spring生态
         ServiceLoader<AutoConfiguration> serviceLoader = ServiceLoader.load(AutoConfiguration.class);
         List<String> autoConfigurations = new LinkedList<>();
         serviceLoader.forEach(autoConfiguration -> {
             String className = autoConfiguration.getClass().getName();
             autoConfigurations.add(className);
         });
+        // 所有的自动配置类都会创建Bean对象
         return autoConfigurations.toArray(new String[0]);
     }
 }

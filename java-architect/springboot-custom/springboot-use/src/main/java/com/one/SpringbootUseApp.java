@@ -13,7 +13,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  */
 @MySpringBootApplication
 //@Import(WebServerAutoConfiguration.class)
-@Import(MyImportSelector.class)
+@Import(MyImportSelector.class) // 使用@Import创建第三方jar的 MyImportSelector 类创建Bean对象
 public class SpringbootUseApp {
 
     public static void main(String[] args) {

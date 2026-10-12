@@ -1,6 +1,4 @@
-package com.one.dao.impl;
-
-import com.one.dao.IUserDao;
+package com.one.dao;
 
 /**
  * @author one
