@@ -1,0 +1,3 @@
+com.one.spi.PaymentAdapter=\
+  com.one.spi.AlipayAdapter,\
+  com.one.spi.WechatAdapter

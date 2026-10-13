@@ -1,10 +1,13 @@
 package com.one;
 
 import com.one.dao.IUserDao;
+import com.one.spi.PaymentAdapter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
+import java.util.List;
 import java.util.ServiceLoader;
 
 /**
@@ -21,6 +24,13 @@ public class App {
         ServiceLoader<IUserDao> userDaoList = ServiceLoader.load(IUserDao.class);
         for (IUserDao userDao : userDaoList) {
             userDao.saveUser();
+        }
+
+        // Spring的SPI依赖 SpringFactoriesLoader
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        List<PaymentAdapter> paymentAdapters = SpringFactoriesLoader.loadFactories(PaymentAdapter.class, classLoader);
+        for (PaymentAdapter paymentAdapter : paymentAdapters) {
+            System.out.println(paymentAdapter.getType());
         }
 
         // 使用 Spring 提供的SPI机制: SpringFactoriesLoader
