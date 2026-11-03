@@ -83,7 +83,8 @@
     minSpareThreads:  内置线程池核心线程数，默认设置 10
     maxConnections：与tomcat建立的最大socket连接数，默认8192
     acceptCount: 操作系统底层请求队列的最大长度 ，默认值为100
--->
+    -->
+    <!-- port就是tomcat处理请求的端口   -->
     <Connector port="8090" protocol="HTTP/1.1" executor="tomcatThreadPool"
                connectionTimeout="20000"
                redirectPort="8443" URIEncoding="UTF-8"/>
@@ -195,7 +196,8 @@
                prefix="localhost_access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
 
-         <!--http://localhost:8080/mvc/user.do  path:context-path  -->
+        <!-- tomcat的两种部署项目方式: 1.将war包拷贝到webapps目录下 2.在这里配置Context标签,指定war路径 -->
+        <!--http://localhost:8080/mvc/user.do  path:context-path  -->
         <Context docBase="E:\IdeaProjects\java-source\mvc-for-tomcat\target\mvc-1.0-SNAPSHOT.war"
                  path="/mvc"  reloadable="true" />
 
