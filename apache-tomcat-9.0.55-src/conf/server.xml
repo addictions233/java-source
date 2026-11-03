@@ -196,7 +196,7 @@
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
 
          <!--http://localhost:8080/mvc/user.do  path:context-path  -->
-        <Context docBase="E:\IdeaProjects\java-source\mvc-for-tomcat\target"
+        <Context docBase="E:\IdeaProjects\java-source\mvc-for-tomcat\target\mvc-1.0-SNAPSHOT.war"
                  path="/mvc"  reloadable="true" />
 
       </Host>
