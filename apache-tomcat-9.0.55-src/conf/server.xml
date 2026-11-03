@@ -84,7 +84,7 @@
     maxConnections：与tomcat建立的最大socket连接数，默认8192
     acceptCount: 操作系统底层请求队列的最大长度 ，默认值为100
 -->
-    <Connector port="8080" protocol="HTTP/1.1" executor="tomcatThreadPool"
+    <Connector port="8090" protocol="HTTP/1.1" executor="tomcatThreadPool"
                connectionTimeout="20000"
                redirectPort="8443" URIEncoding="UTF-8"/>
 
@@ -196,7 +196,7 @@
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
 
          <!--http://localhost:8080/mvc/user.do  path:context-path  -->
-        <Context docBase="F:\Resource\mvc\target\mvc-1.0-SNAPSHOT"
+        <Context docBase="E:\IdeaProjects\java-source\mvc-for-tomcat\target"
                  path="/mvc"  reloadable="true" />
 
       </Host>
